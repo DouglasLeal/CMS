@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CMS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="~/tinymce/tinymce.min.js"></script>
+
+    <script>
+        tinymce.init({
+            selector: '#tinyContent'
+        });
+    </script>
+</head>
+<body>
+    <div class="row g-0">
+        <div class="col-2">
+            <div class="d-flex flex-column flex-shrink-0 p-3 bg-dark text-bg-dark" style="width: 280px; height: 100vh;">
+                <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                    <span class="fs-4">Admin</span>
+                </a>
+                <hr class="text-white">
+
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white" aria-current="page">
+                            <i class="fa-solid fa-house"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Posts" asp-action="Index" class="nav-link text-white">
+                            <i class="fa-solid fa-file-pen"></i>
+                            Posts
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Categories" asp-action="Index" class="nav-link text-white">
+                            <i class="fa-solid fa-tags"></i>
+                            Categorias
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-8">
+            <main>
+                @RenderBody()
+            </main>
+
+            <footer class="border-top footer text-muted text-center">
+                <div class="container">
+                    &copy; 2023 - CMS - Douglas Leal</a>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        let urlPathname = location.pathname.toLowerCase()
+        let links = document.querySelectorAll(".nav-link");
+
+        links.forEach(l => {
+            l.classList.remove("active");
+        })
+
+        links.forEach(link => {
+            let l = link.innerText.toLowerCase().trim();
+            if (urlPathname.indexOf(l) >= 0){
+                link.classList.add('active');
+            }
+        })
+
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
