@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using CMS.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Data
@@ -9,5 +10,7 @@ namespace CMS.Data
             : base(options)
         {
         }
+
+        public DbSet<Category> Categories { get; set; }
     }
 }
