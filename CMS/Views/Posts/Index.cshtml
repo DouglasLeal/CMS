@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Posts";
+    Layout = "~/Views/Shared/_LayoutAdm.cshtml";
 }
 
 <h1 class="text-center">Posts</h1>
@@ -16,9 +17,6 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Content)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Category)
             </th>
             <th></th>
@@ -29,9 +27,6 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Content)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Category.Name)
