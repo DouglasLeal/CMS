@@ -12,7 +12,15 @@
             <div class="col-6 mb-3">
                 <a class="post-title" asp-action="Post" asp-route-id="@item.Id">
                     <div class="card box-shadow post-card">
-                        <img src="~/images/@item.ImageUrl" class="card-img-top w-100" alt="...">
+                        @if (@item.ImageUrl == null)
+                        {
+                            <img src="~/images/no_image.jpg" class="card-img-top w-100" height="300px" alt="...">
+                        }
+                        else
+                        {
+                            <img src="~/images/@item.ImageUrl" class="card-img-top w-100" height="300px" alt="...">
+                        }
+
                         <div class="card-body text-center">
                             <h2 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h2>
                             <span class="badge rounded-pill bg-dark text-bg-dark">@Html.DisplayFor(modelItem => item.Category.Name)</span>

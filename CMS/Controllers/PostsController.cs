@@ -14,9 +14,11 @@ using System.Drawing;
 using System.Collections;
 using System.Net.Mime;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CMS.Controllers
 {
+    [Authorize]
     [Route("")]
     [Route("posts")]
     public class PostsController : Controller
@@ -30,6 +32,7 @@ namespace CMS.Controllers
             _mapper = mapper;
         }
 
+        [AllowAnonymous]
         // GET: Posts
         [HttpGet("/")]
         public async Task<IActionResult> Posts()
@@ -38,6 +41,7 @@ namespace CMS.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        [AllowAnonymous]
         [HttpGet("/post/{id:int}")]
         public async Task<IActionResult> Post(int? id)
         {

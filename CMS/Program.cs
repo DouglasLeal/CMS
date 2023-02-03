@@ -30,6 +30,16 @@ else
     app.UseHsts();
 }
 
+//app.Use(async (context, next) =>
+//{
+//    if (context.Request.Path.Value.ToLower().StartsWith("/identity/account/login"))
+//    {
+//        context.Response.StatusCode = 404; //Not found
+//        return;
+//    }
+//    await next();
+//});
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

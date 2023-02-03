@@ -46,6 +46,11 @@
                         </a>
                     </li>
                 </ul>
+
+                <hr />
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("", "", new { area = "" })">
+                    <button type="submit" class="text-align w-100 nav-link btn btn-link text-danger"><i class="fa-solid fa-door-open"></i> Logout</button>
+                </form>
             </div>
         </div>
         <div class="col-10">

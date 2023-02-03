@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
 using CMS.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CMS.Controllers
 {
+    [Authorize]
     [Route("categorias")]
     public class CategoriesController : Controller
     {
