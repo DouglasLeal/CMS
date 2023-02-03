@@ -1,9 +1,10 @@
-﻿using System.ComponentModel;
+﻿using CMS.Models;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
-namespace CMS.Models
+namespace CMS.ViewModels
 {
-    public class Post
+    public class PostViewModel
     {
         [Key]
         public int Id { get; set; }
@@ -13,12 +14,15 @@ namespace CMS.Models
         [DisplayName("Título")]
         public string? Title { get; set; }
 
-        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
-        [DisplayName("Conteúdo")]
-        public string? Content { get; set; }
+        [DisplayName("Imagem")]
+        public IFormFile? ImageFile { get; set; }
 
         [DisplayName("Imagem")]
         public string? ImageUrl { get; set; }
+
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
+        [DisplayName("Conteúdo")]
+        public string? Content { get; set; }
 
         [DisplayName("Categoria")]
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
@@ -26,6 +30,5 @@ namespace CMS.Models
 
         [DisplayName("Categoria")]
         public Category? Category { get; set; }
-
     }
 }

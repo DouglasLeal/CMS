@@ -4,6 +4,7 @@ using System.Diagnostics;
 
 namespace CMS.Controllers
 {
+    [Route("home")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

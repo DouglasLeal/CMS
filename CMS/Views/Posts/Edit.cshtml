@@ -1,4 +1,4 @@
-﻿@model CMS.Models.Post
+﻿@model CMS.ViewModels.PostViewModel
 
 @{
     ViewData["Title"] = "Posts";
@@ -9,7 +9,7 @@
 
 <hr />
 
-<form asp-action="Edit">
+<form enctype="multipart/form-data" asp-action="Edit">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
     <div class="form-group mb-3">
@@ -17,6 +17,22 @@
         <input asp-for="Title" class="form-control" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
+    <div class="form-group mb-3">
+        <label asp-for="ImageFile" class="control-label fw-bold"></label>
+        <input asp-for="ImageFile" class="form-control" />
+        <div class="form-text">Deixe em branco se quiser manter a imagem atual.</div>
+        <span asp-validation-for="ImageFile" class="text-danger"></span>
+    </div>
+    @if (@Model.ImageUrl != null)
+    {
+        <div class="form-group mb-3">
+            <label class="control-label fw-bold">Imagem atual:</label>
+            <br />
+            <img src="~/images/@Model.ImageUrl" width="300px" />
+        </div>
+    }
+
+
     <div class="form-group mb-3">
         <label asp-for="CategoryId" class="control-label  fw-bold"></label>
         <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
