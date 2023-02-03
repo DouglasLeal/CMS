@@ -9,10 +9,29 @@ html {
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2);
 }
 
 .tox-promotion {
     display: none;
+}
+
+.card-img-top {
+    filter: brightness(50%);
+    transition: filter .5s;
+}
+
+.post-card:hover .card-img-top {
+    filter: brightness(100%);
+}
+
+.post-title {
+    color: red;
+    text-decoration: none;
+    transition: color .5s;
 }

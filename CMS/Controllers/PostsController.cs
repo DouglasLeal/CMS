@@ -38,6 +38,27 @@ namespace CMS.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        [HttpGet("/post/{id:int}")]
+        public async Task<IActionResult> Post(int? id)
+        {
+            if (id == null || _context.Posts == null)
+            {
+                return NotFound();
+            }
+
+            var post = await _context.Posts
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = _mapper.Map<PostViewModel>(post);
+
+            return View(viewModel);
+        }
+
         // GET: Posts
         [HttpGet("posts/")]
         public async Task<IActionResult> Index()
