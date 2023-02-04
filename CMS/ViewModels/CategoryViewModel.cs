@@ -13,8 +13,7 @@ namespace CMS.ViewModels
         [DisplayName("Nome")]
         public string? Name { get; set; }
 
-        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
-        [MinLength(2, ErrorMessage = "O campo {0} deve ter no mínimo {1} caracteres.")]
+
         public string? Slug { get; set; }
     }
 }

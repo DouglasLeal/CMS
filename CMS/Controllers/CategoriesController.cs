@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using CMS.Interfaces;
 using AutoMapper;
 using CMS.ViewModels;
+using Slugify;
 
 namespace CMS.Controllers
 {
@@ -20,11 +21,13 @@ namespace CMS.Controllers
     {
         private readonly ICategoryRepository _repository;
         private readonly IMapper _mapper;
+        private readonly ISlugHelper _slugHelper;
 
-        public CategoriesController(ICategoryRepository repository, IMapper mapper)
+        public CategoriesController(ICategoryRepository repository, IMapper mapper, ISlugHelper slugHelper)
         {
             _repository = repository;
             _mapper = mapper;
+            _slugHelper = slugHelper;
         }
 
         // GET: Categories
@@ -76,6 +79,11 @@ namespace CMS.Controllers
             {
                 var category = _mapper.Map<Category>(viewModel);
 
+                if(category.Slug == null)
+                {
+                    category.Slug = _slugHelper.GenerateSlug(category.Name);
+                }
+
                 await _repository.Create(category);
                 return RedirectToAction(nameof(Index));
             }
@@ -120,6 +128,12 @@ namespace CMS.Controllers
                 try
                 {
                     var category = _mapper.Map<Category>(viewModel);
+
+                    if (category.Slug == null)
+                    {
+                        category.Slug = _slugHelper.GenerateSlug(category.Name);
+                    }
+
                     await _repository.Update(category);
                 }
                 catch (DbUpdateConcurrencyException)

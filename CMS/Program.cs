@@ -3,6 +3,7 @@ using CMS.Interfaces;
 using CMS.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Slugify;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<IPostRepository, PostRepository>();
+
+builder.Services.AddTransient<ISlugHelper, SlugHelper>();
 
 var app = builder.Build();
 
