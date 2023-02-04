@@ -83,6 +83,12 @@ namespace CMS.Controllers
                 {
                     category.Slug = _slugHelper.GenerateSlug(category.Name);
                 }
+                else
+                {
+                    category.Slug = _slugHelper.GenerateSlug(category.Slug);
+                }
+
+                if (!CheckNameAndSlug(category)) return View(viewModel);
 
                 await _repository.Create(category);
                 return RedirectToAction(nameof(Index));
@@ -133,6 +139,12 @@ namespace CMS.Controllers
                     {
                         category.Slug = _slugHelper.GenerateSlug(category.Name);
                     }
+                    else
+                    {
+                        category.Slug = _slugHelper.GenerateSlug(category.Slug);
+                    }
+
+                    if (!CheckNameAndSlug(category)) return View(viewModel);
 
                     await _repository.Update(category);
                 }
@@ -195,6 +207,23 @@ namespace CMS.Controllers
         private bool CategoryExists(int id)
         {
             return _repository.CategoryExists(id);
+        }
+
+        private bool CheckNameAndSlug(Category category)
+        {
+            if (_repository.NameExists(category.Name))
+            {
+                ModelState.AddModelError(string.Empty, "Já existe uma categoria com este nome");
+                return false;
+            }
+
+            if (_repository.SlugExists(category.Slug))
+            {
+                ModelState.AddModelError(string.Empty, "Já existe uma categoria com este slug.");
+                return false;
+            }
+
+            return true;
         }
     }
 }

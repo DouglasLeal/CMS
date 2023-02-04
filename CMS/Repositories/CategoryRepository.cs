@@ -51,7 +51,17 @@ namespace CMS.Repositories
 
         public bool CategoryExists(int id)
         {
-            return _dbSet.Any(e => e.Id == id);
+            return _dbSet.Any(c => c.Id == id);
+        }
+
+        public bool NameExists(string name) 
+        {
+            return _dbSet.Any(c => c.Name == name);
+        }
+
+        public bool SlugExists(string slug)
+        {
+            return _dbSet.Any(c => c.Slug == slug);
         }
     }
 }

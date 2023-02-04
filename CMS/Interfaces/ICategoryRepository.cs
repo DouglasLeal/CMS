@@ -11,5 +11,7 @@ namespace CMS.Interfaces
         Task Update(Category category);
         Task Delete(Category category);
         bool CategoryExists(int id);
+        bool NameExists(string name);
+        bool SlugExists(string slug);
     }
 }
