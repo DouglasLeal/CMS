@@ -116,16 +116,23 @@ namespace CMS.Controllers
 
             Post post;
 
+            string imageUrl = "";
+
             if(viewModel.ImageFile != null)
             {
-                if (!await UploadFile(viewModel.ImageFile))
+                var guid = Guid.NewGuid();
+                imageUrl = $"{guid}_{viewModel.ImageFile.FileName}";
+
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/", imageUrl);
+
+                if (!await UploadFile(viewModel.ImageFile, path))
                 {
                     return View(viewModel);
                 }
             }            
 
             post = _mapper.Map<Post>(viewModel);
-            post.ImageUrl = viewModel.ImageFile != null ? viewModel.ImageFile.FileName : null;
+            post.ImageUrl = viewModel.ImageFile != null ? imageUrl : null;
 
             if (ModelState.IsValid)
             {
@@ -172,7 +179,8 @@ namespace CMS.Controllers
             }
 
             var post = _mapper.Map<Post>(viewModel);
-           
+
+            string imageUrl;
 
             if (ModelState.IsValid)
             {
@@ -180,9 +188,14 @@ namespace CMS.Controllers
                 {
                     if (viewModel.ImageFile != null)
                     {
-                        if (!await UploadFile(viewModel.ImageFile)) return View(viewModel);
+                        var guid = Guid.NewGuid();
+                        imageUrl = $"{guid}_{viewModel.ImageFile.FileName}";
 
-                        post.ImageUrl = viewModel.ImageFile.FileName;                  
+                        var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/", imageUrl);
+
+                        if (!await UploadFile(viewModel.ImageFile, path)) return View(viewModel);
+
+                        post.ImageUrl = imageUrl;                  
                     }                    
 
                     await _postRepository.Update(post);
@@ -253,9 +266,9 @@ namespace CMS.Controllers
             return _postRepository.PostExists(id);
         }
 
-        private async Task<bool> UploadFile(IFormFile file)
+        private async Task<bool> UploadFile(IFormFile file, string path)
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/", file.FileName);
+            
 
             if (System.IO.File.Exists(path))
             {
