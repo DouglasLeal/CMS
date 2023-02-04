@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using CMS.Data;
 using CMS.Models;
 using Microsoft.AspNetCore.Authorization;
+using CMS.Interfaces;
+using AutoMapper;
+using CMS.ViewModels;
 
 namespace CMS.Controllers
 {
@@ -15,37 +18,44 @@ namespace CMS.Controllers
     [Route("categorias")]
     public class CategoriesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICategoryRepository _repository;
+        private readonly IMapper _mapper;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(ICategoryRepository repository, IMapper mapper)
         {
-            _context = context;
+            _repository = repository;
+            _mapper = mapper;
         }
 
         // GET: Categories
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Categories.ToListAsync());
+            var categories = await _repository.List();
+            var vielModels = _mapper.Map<IEnumerable<CategoryViewModel>>(categories);
+
+            return View(vielModels);
         }
 
         // GET: Categories/Details/5
         [HttpGet("detalhes/{id:int}")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _repository == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _repository.GetById(id);
+
             if (category == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            var viewModel = _mapper.Map<CategoryViewModel>(category);
+
+            return View(viewModel);
         }
 
         // GET: Categories/Create
@@ -60,32 +70,37 @@ namespace CMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("novo")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Slug")] Category category)
+        public async Task<IActionResult> Create([Bind("Id,Name,Slug")] CategoryViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
+                var category = _mapper.Map<Category>(viewModel);
+
+                await _repository.Create(category);
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+
+            return View(viewModel);
         }
 
         // GET: Categories/Edit/5
         [HttpGet("editar/{id:int}")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _repository == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _repository.GetById(id);
             if (category == null)
             {
                 return NotFound();
             }
-            return View(category);
+
+            var viewModel = _mapper.Map<CategoryViewModel>(category);
+
+            return View(viewModel);
         }
 
         // POST: Categories/Edit/5
@@ -93,9 +108,9 @@ namespace CMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("editar/{id:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Slug")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Slug")] CategoryViewModel viewModel)
         {
-            if (id != category.Id)
+            if (id != viewModel.Id)
             {
                 return NotFound();
             }
@@ -104,12 +119,12 @@ namespace CMS.Controllers
             {
                 try
                 {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    var category = _mapper.Map<Category>(viewModel);
+                    await _repository.Update(category);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.Id))
+                    if (!CategoryExists(viewModel.Id))
                     {
                         return NotFound();
                     }
@@ -120,26 +135,27 @@ namespace CMS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return View(viewModel);
         }
 
         // GET: Categories/Delete/5
         [HttpGet("excluir/{id:int}")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _repository == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _repository.GetById(id);
             if (category == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            var viewModel = _mapper.Map<CategoryViewModel>(category);
+
+            return View(viewModel);
         }
 
         // POST: Categories/Delete/5
@@ -147,23 +163,24 @@ namespace CMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Categories == null)
+            if (_repository == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
             }
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _repository.GetById(id);
             if (category != null)
             {
-                _context.Categories.Remove(category);
+                await _repository.Delete(category);
+
+                return RedirectToAction(nameof(Index));
             }
-            
-            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
         private bool CategoryExists(int id)
         {
-          return _context.Categories.Any(e => e.Id == id);
+            return _repository.CategoryExists(id);
         }
     }
 }
