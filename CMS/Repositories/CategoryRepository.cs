@@ -8,26 +8,28 @@ namespace CMS.Repositories
     public class CategoryRepository : ICategoryRepository
     {
         private readonly ApplicationDbContext _db;
+        private readonly DbSet<Category> _dbSet;
 
         public CategoryRepository(ApplicationDbContext db)
         {
             _db = db;
+            _dbSet = db.Set<Category>();
         }
 
         public async Task Create(Category category)
         {
-            _db.Categories.Add(category);
+            _dbSet.Add(category);
             await _db.SaveChangesAsync();
         }
 
         public async Task<Category> GetById(int? id)
         {
-            return await _db.Categories.FindAsync(id);
+            return await _dbSet.FindAsync(id);
         }
 
         public async Task<IList<Category>> List()
         {
-            return await _db.Categories.ToListAsync();
+            return await _dbSet.ToListAsync();
         }
 
         public async Task Update(Category category)
@@ -49,7 +51,7 @@ namespace CMS.Repositories
 
         public bool CategoryExists(int id)
         {
-            return _db.Categories.Any(e => e.Id == id);
+            return _dbSet.Any(e => e.Id == id);
         }
     }
 }

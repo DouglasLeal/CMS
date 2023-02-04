@@ -15,6 +15,7 @@ using System.Collections;
 using System.Net.Mime;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
+using CMS.Interfaces;
 
 namespace CMS.Controllers
 {
@@ -23,12 +24,14 @@ namespace CMS.Controllers
     [Route("posts")]
     public class PostsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IPostRepository _postRepository;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
 
-        public PostsController(ApplicationDbContext context, IMapper mapper)
+        public PostsController(IPostRepository postRepository, ICategoryRepository categoryRepository, IMapper mapper)
         {
-            _context = context;
+            _postRepository = postRepository;
+            _categoryRepository = categoryRepository;
             _mapper = mapper;
         }
 
@@ -37,22 +40,22 @@ namespace CMS.Controllers
         [HttpGet("/")]
         public async Task<IActionResult> Posts()
         {
-            var applicationDbContext = _context.Posts.Include(p => p.Category);
-            return View(await applicationDbContext.ToListAsync());
+            var posts = await _postRepository.List();
+            var viewModels = _mapper.Map<IEnumerable<PostViewModel>>(posts);
+            return View(viewModels);
         }
 
         [AllowAnonymous]
         [HttpGet("/post/{id:int}")]
         public async Task<IActionResult> Post(int? id)
         {
-            if (id == null || _context.Posts == null)
+            if (id == null || _postRepository == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = await _postRepository.GetById(id);
+
             if (post == null)
             {
                 return NotFound();
@@ -67,22 +70,23 @@ namespace CMS.Controllers
         [HttpGet("posts/")]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Posts.Include(p => p.Category);
-            return View(await applicationDbContext.ToListAsync());
+            var posts = await _postRepository.List();
+            var viewModels = _mapper.Map<IEnumerable<PostViewModel>>(posts);
+
+            return View(viewModels);
         }
 
         // GET: Posts/Details/5
         [HttpGet("posts/detalhes/{id:int}")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Posts == null)
+            if (id == null || _postRepository == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = await _postRepository.GetById(id);
+
             if (post == null)
             {
                 return NotFound();
@@ -95,9 +99,9 @@ namespace CMS.Controllers
 
         // GET: Posts/Create
         [HttpGet("posts/criar")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(await _categoryRepository.List(), "Id", "Name");
             return View();
         }
 
@@ -108,7 +112,7 @@ namespace CMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Content,ImageFile,CategoryId")] PostViewModel viewModel)
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", viewModel.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await _categoryRepository.List(), "Id", "Name", viewModel.CategoryId);
 
             Post post;
 
@@ -125,8 +129,7 @@ namespace CMS.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Add(post);
-                await _context.SaveChangesAsync();
+                await _postRepository.Create(post);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -137,17 +140,17 @@ namespace CMS.Controllers
         [HttpGet("posts/editar/{id:int}")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Posts == null)
+            if (id == null || _postRepository == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Posts.FindAsync(id);
+            var post = await _postRepository.GetById(id);
             if (post == null)
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", post.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await _categoryRepository.List(), "Id", "Name", post.CategoryId);
 
             var viewModel = _mapper.Map<PostViewModel>(post);
 
@@ -161,7 +164,7 @@ namespace CMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,ImageFile,CategoryId")] PostViewModel viewModel)
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", viewModel.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await _categoryRepository.List(), "Id", "Name", viewModel.CategoryId);
 
             if (id != viewModel.Id)
             {
@@ -182,8 +185,7 @@ namespace CMS.Controllers
                         post.ImageUrl = viewModel.ImageFile.FileName;                  
                     }                    
 
-                    _context.Update(post);
-                    await _context.SaveChangesAsync();
+                    await _postRepository.Update(post);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -206,14 +208,12 @@ namespace CMS.Controllers
         [HttpGet("posts/excluir/{id:int}")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Posts == null)
+            if (id == null || _postRepository == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = await _postRepository.GetById(id);
             if (post == null)
             {
                 return NotFound();
@@ -229,14 +229,14 @@ namespace CMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Posts == null)
+            if (_postRepository == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Posts'  is null.");
             }
-            var post = await _context.Posts.FindAsync(id);
+            var post = await _postRepository.GetById(id);
             if (post != null)
             {
-                _context.Posts.Remove(post);
+                await _postRepository.Delete(post);
             }
 
             if(post.ImageUrl != null)
@@ -245,14 +245,12 @@ namespace CMS.Controllers
                 System.IO.File.Delete(path);
             }           
                        
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool PostExists(int id)
         {
-            return _context.Posts.Any(e => e.Id == id);
+            return _postRepository.PostExists(id);
         }
 
         private async Task<bool> UploadFile(IFormFile file)

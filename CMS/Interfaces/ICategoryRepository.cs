@@ -1,4 +1,5 @@
 ﻿using CMS.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Interfaces
 {
@@ -10,6 +11,5 @@ namespace CMS.Interfaces
         Task Update(Category category);
         Task Delete(Category category);
         bool CategoryExists(int id);
-
     }
 }
