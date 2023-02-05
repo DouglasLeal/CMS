@@ -30,8 +30,12 @@ html {
     filter: brightness(100%);
 }
 
-.post-title {
+.post-card {
     color: red;
     text-decoration: none;
     transition: color .5s;
+}
+
+.post-title {
+    min-height: 115px;
 }

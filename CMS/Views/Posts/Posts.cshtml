@@ -41,7 +41,7 @@
                 @foreach (var item in Model)
                 {
                     <div class="col-6 mb-3">
-                        <a class="post-title" asp-action="Post" asp-route-slug="@item.Slug">
+                        <a class="post-card" asp-action="Post" asp-route-slug="@item.Slug">
                             <div class="card box-shadow post-card">
                                 @if (@item.ImageUrl == null)
                                 {
@@ -53,7 +53,7 @@
                                 }
 
                                 <div class="card-body text-center">
-                                    <h2 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h2>
+                                    <h2 class="card-title post-title">@Html.DisplayFor(modelItem => item.Title)</h2>
                                     <span class="badge rounded-pill bg-dark text-bg-dark">@Html.DisplayFor(modelItem => item.Category.Name)</span>
                                 </div>
                             </div>
