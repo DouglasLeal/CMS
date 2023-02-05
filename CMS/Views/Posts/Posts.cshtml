@@ -2,32 +2,65 @@
 
 @{
     ViewData["Title"] = "Posts";
+
+    string path = Context.Request.Path;
+    var arrayPath = path.Split("/");
+    string? categorySelected = null;
+    if(arrayPath.Length >= 3)
+    {
+        categorySelected = arrayPath[3];
+    }
+    
 }
 
 
 <div class="container">
     <div class="row">
-        @foreach (var item in Model)
-        {
-            <div class="col-6 mb-3">
-                <a class="post-title" asp-action="Post" asp-route-id="@item.Id">
-                    <div class="card box-shadow post-card">
-                        @if (@item.ImageUrl == null)
-                        {
-                            <img src="~/images/no_image.jpg" class="card-img-top w-100" height="300px" alt="...">
-                        }
-                        else
-                        {
-                            <img src="~/images/@item.ImageUrl" class="card-img-top w-100" height="300px" alt="...">
-                        }
+        <div class="col-2">
+            <h4>Categorias</h4>
+            <a asp-controller="posts" asp-action=""><p>Todos</p></a>
+            @foreach (var category in ViewBag.Categories)
+            {
+                <a asp-action="posts" asp-route-slug="@category.Slug"><p>@category.Name</p></a>
+            }
+        </div>
 
-                        <div class="card-body text-center">
-                            <h2 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h2>
-                            <span class="badge rounded-pill bg-dark text-bg-dark">@Html.DisplayFor(modelItem => item.Category.Name)</span>
-                        </div>
+        <div class="col-10">
+            @if (@categorySelected != null)
+            {
+                <h1 class="text-center mb-5">@categorySelected</h1>
+            }
+            
+
+            <div class="row">               
+                @if (Model.Count() == 0)
+                {
+                    <p class="alert alert-info text-center">Nenhum post encontrado.</p>
+                }
+
+                @foreach (var item in Model)
+                {
+                    <div class="col-6 mb-3">
+                        <a class="post-title" asp-action="Post" asp-route-id="@item.Id">
+                            <div class="card box-shadow post-card">
+                                @if (@item.ImageUrl == null)
+                                {
+                                    <img src="~/images/no_image.jpg" class="card-img-top w-100" height="300px" alt="...">
+                                }
+                                else
+                                {
+                                    <img src="~/images/@item.ImageUrl" class="card-img-top w-100" height="300px" alt="...">
+                                }
+
+                                <div class="card-body text-center">
+                                    <h2 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h2>
+                                    <span class="badge rounded-pill bg-dark text-bg-dark">@Html.DisplayFor(modelItem => item.Category.Name)</span>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                </a>
+                }
             </div>
-        }
-    </div>
+        </div>
+    </div>    
 </div>

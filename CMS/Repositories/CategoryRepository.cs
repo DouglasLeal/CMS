@@ -29,7 +29,7 @@ namespace CMS.Repositories
 
         public async Task<IList<Category>> List()
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet.OrderBy(c => c.Name).ToListAsync();
         }
 
         public async Task Update(Category category)

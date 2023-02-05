@@ -6,6 +6,7 @@ namespace CMS.Interfaces
     {
         Task Create(Post post);
         Task<IList<Post>> List();
+        Task<IList<Post>> List(string categorySlug);
         Task<Post> GetById(int? id);
         Task Update(Post post);
         Task Delete(Post post);

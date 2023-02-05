@@ -26,10 +26,27 @@ namespace CMS.Controllers
 
         [AllowAnonymous]
         [HttpGet("/")]
-        public async Task<IActionResult> Posts()
+        [HttpGet("/posts")]
+        [HttpGet("/posts/categorias/{slug}")]
+        public async Task<IActionResult> Posts(string? slug)
         {
-            var posts = await _postRepository.List();
+            IList<Post> posts;
+
+            if(slug != null)
+            {
+                posts = await _postRepository.List(slug);
+            }
+            else
+            {
+                posts = await _postRepository.List();
+            }
+
             var viewModels = _mapper.Map<IEnumerable<PostViewModel>>(posts);
+
+            var categories = await _categoryRepository.List();
+            var categoriesViewModels = _mapper.Map<IEnumerable<CategoryViewModel>>(categories);
+            ViewData["Categories"] = categoriesViewModels;
+
             return View(viewModels);
         }
 

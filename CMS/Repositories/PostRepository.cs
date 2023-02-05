@@ -28,7 +28,12 @@ namespace CMS.Repositories
         public async Task<IList<Post>> List()
         {
             return await _db.Posts.Include(p => p.Category).ToListAsync();
-        }          
+        }
+
+        public async Task<IList<Post>> List(string categorySlug)
+        {
+            return await _db.Posts.Include(p => p.Category).Where(p => p.Category.Slug == categorySlug).ToListAsync();
+        }
 
         public async Task Update(Post post)
         {
