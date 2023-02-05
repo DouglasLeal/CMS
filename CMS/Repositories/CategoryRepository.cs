@@ -54,14 +54,14 @@ namespace CMS.Repositories
             return _dbSet.Any(c => c.Id == id);
         }
 
-        public bool NameExists(string name) 
+        public bool NameExists(Category category) 
         {
-            return _dbSet.Any(c => c.Name == name);
+            return _dbSet.Any(c => (c.Name == category.Name && c.Id != category.Id));
         }
 
-        public bool SlugExists(string slug)
+        public bool SlugExists(Category category)
         {
-            return _dbSet.Any(c => c.Slug == slug);
+            return _dbSet.Any(c => (c.Slug == category.Slug && c.Id != category.Id));
         }
     }
 }

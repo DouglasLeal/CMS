@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using CMS.Data;
-using CMS.Models;
-using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
 using CMS.Interfaces;
-using AutoMapper;
+using CMS.Models;
 using CMS.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Slugify;
 
 namespace CMS.Controllers
 {
     [Authorize]
-    [Route("categorias")]
+    [Route("admin/categorias")]
     public class CategoriesController : Controller
     {
         private readonly ICategoryRepository _repository;
@@ -30,7 +24,6 @@ namespace CMS.Controllers
             _slugHelper = slugHelper;
         }
 
-        // GET: Categories
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
@@ -40,7 +33,6 @@ namespace CMS.Controllers
             return View(vielModels);
         }
 
-        // GET: Categories/Details/5
         [HttpGet("detalhes/{id:int}")]
         public async Task<IActionResult> Details(int? id)
         {
@@ -61,16 +53,12 @@ namespace CMS.Controllers
             return View(viewModel);
         }
 
-        // GET: Categories/Create
         [HttpGet("novo")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Categories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("novo")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Slug")] CategoryViewModel viewModel)
@@ -97,7 +85,6 @@ namespace CMS.Controllers
             return View(viewModel);
         }
 
-        // GET: Categories/Edit/5
         [HttpGet("editar/{id:int}")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -117,9 +104,6 @@ namespace CMS.Controllers
             return View(viewModel);
         }
 
-        // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("editar/{id:int}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Slug")] CategoryViewModel viewModel)
@@ -164,7 +148,6 @@ namespace CMS.Controllers
             return View(viewModel);
         }
 
-        // GET: Categories/Delete/5
         [HttpGet("excluir/{id:int}")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -184,7 +167,6 @@ namespace CMS.Controllers
             return View(viewModel);
         }
 
-        // POST: Categories/Delete/5
         [HttpPost("excluir/{id:int}"), ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -211,13 +193,13 @@ namespace CMS.Controllers
 
         private bool CheckNameAndSlug(Category category)
         {
-            if (_repository.NameExists(category.Name))
+            if (_repository.NameExists(category))
             {
                 ModelState.AddModelError(string.Empty, "Já existe uma categoria com este nome");
                 return false;
             }
 
-            if (_repository.SlugExists(category.Slug))
+            if (_repository.SlugExists(category))
             {
                 ModelState.AddModelError(string.Empty, "Já existe uma categoria com este slug.");
                 return false;

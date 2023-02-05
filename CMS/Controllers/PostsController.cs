@@ -1,27 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
+using CMS.Interfaces;
+using CMS.Models;
+using CMS.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using CMS.Data;
-using CMS.Models;
-using CMS.ViewModels;
-using AutoMapper;
-using System.IO;
-using System.Drawing;
-using System.Collections;
-using System.Net.Mime;
-using System.Xml.Linq;
-using Microsoft.AspNetCore.Authorization;
-using CMS.Interfaces;
 
 namespace CMS.Controllers
 {
     [Authorize]
     [Route("")]
-    [Route("posts")]
     public class PostsController : Controller
     {
         private readonly IPostRepository _postRepository;
@@ -36,7 +25,6 @@ namespace CMS.Controllers
         }
 
         [AllowAnonymous]
-        // GET: Posts
         [HttpGet("/")]
         public async Task<IActionResult> Posts()
         {
@@ -66,8 +54,7 @@ namespace CMS.Controllers
             return View(viewModel);
         }
 
-        // GET: Posts
-        [HttpGet("posts/")]
+        [HttpGet("/admin/posts/")]
         public async Task<IActionResult> Index()
         {
             var posts = await _postRepository.List();
@@ -76,8 +63,7 @@ namespace CMS.Controllers
             return View(viewModels);
         }
 
-        // GET: Posts/Details/5
-        [HttpGet("posts/detalhes/{id:int}")]
+        [HttpGet("/admin/posts/detalhes/{id:int}")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _postRepository == null)
@@ -97,18 +83,14 @@ namespace CMS.Controllers
             return View(viewModel);
         }
 
-        // GET: Posts/Create
-        [HttpGet("posts/criar")]
+        [HttpGet("/admin/posts/criar")]
         public async Task<IActionResult> Create()
         {
             ViewData["CategoryId"] = new SelectList(await _categoryRepository.List(), "Id", "Name");
             return View();
         }
 
-        // POST: Posts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost("posts/criar")]
+        [HttpPost("/admin/posts/criar")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Content,ImageFile,CategoryId")] PostViewModel viewModel)
         {
@@ -143,8 +125,7 @@ namespace CMS.Controllers
             return View(viewModel);
         }
 
-        // GET: Posts/Edit/5
-        [HttpGet("posts/editar/{id:int}")]
+        [HttpGet("/admin/posts/editar/{id:int}")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _postRepository == null)
@@ -164,12 +145,9 @@ namespace CMS.Controllers
             return View(viewModel);
         }
 
-        // POST: Posts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost("posts/editar/{id:int}")]
+        [HttpPost("/admin/posts/editar/{id:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,ImageFile,CategoryId")] PostViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,ImageFile,ImageUrl,CategoryId")] PostViewModel viewModel)
         {
             ViewData["CategoryId"] = new SelectList(await _categoryRepository.List(), "Id", "Name", viewModel.CategoryId);
 
@@ -195,9 +173,8 @@ namespace CMS.Controllers
 
                         if (!await UploadFile(viewModel.ImageFile, path)) return View(viewModel);
 
-                        post.ImageUrl = imageUrl;                  
-                    }                    
-
+                        post.ImageUrl = imageUrl;
+                    }
                     await _postRepository.Update(post);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -217,8 +194,7 @@ namespace CMS.Controllers
             return View(viewModel);
         }
 
-        // GET: Posts/Delete/5
-        [HttpGet("posts/excluir/{id:int}")]
+        [HttpGet("/admin/posts/excluir/{id:int}")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _postRepository == null)
@@ -237,8 +213,7 @@ namespace CMS.Controllers
             return View(viewModel);
         }
 
-        // POST: Posts/Delete/5
-        [HttpPost("posts/excluir/{id:int}"), ActionName("Delete")]
+        [HttpPost("/admin/posts/excluir/{id:int}"), ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
