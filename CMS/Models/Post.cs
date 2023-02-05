@@ -14,6 +14,10 @@ namespace CMS.Models
         public string? Title { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
+        [MinLength(2, ErrorMessage = "O campo {0} deve ter no mínimo {1} caracteres.")]
+        public string? Slug { get; set; }
+
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         [DisplayName("Conteúdo")]
         public string? Content { get; set; }
 

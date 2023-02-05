@@ -41,7 +41,7 @@
                 @foreach (var item in Model)
                 {
                     <div class="col-6 mb-3">
-                        <a class="post-title" asp-action="Post" asp-route-id="@item.Id">
+                        <a class="post-title" asp-action="Post" asp-route-slug="@item.Slug">
                             <div class="card box-shadow post-card">
                                 @if (@item.ImageUrl == null)
                                 {

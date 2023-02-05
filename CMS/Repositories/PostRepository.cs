@@ -25,6 +25,11 @@ namespace CMS.Repositories
             return await _db.Posts.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == id);
         }
 
+        public async Task<Post> GetBySlug(string slug)
+        {
+            return await _db.Posts.Include(p => p.Category).FirstOrDefaultAsync(p => p.Slug == slug);
+        }
+
         public async Task<IList<Post>> List()
         {
             return await _db.Posts.Include(p => p.Category).ToListAsync();

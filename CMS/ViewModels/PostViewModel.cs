@@ -14,6 +14,8 @@ namespace CMS.ViewModels
         [DisplayName("Título")]
         public string? Title { get; set; }
 
+        public string? Slug { get; set; }
+
         [DisplayName("Imagem")]
         public IFormFile? ImageFile { get; set; }
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Slugify;
 
 namespace CMS.Controllers
 {
@@ -16,12 +17,18 @@ namespace CMS.Controllers
         private readonly IPostRepository _postRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
+        private readonly ISlugHelper _slugHelper;
 
-        public PostsController(IPostRepository postRepository, ICategoryRepository categoryRepository, IMapper mapper)
+        public PostsController(
+            IPostRepository postRepository, 
+            ICategoryRepository categoryRepository, 
+            IMapper mapper,
+            ISlugHelper slugHelper)
         {
             _postRepository = postRepository;
             _categoryRepository = categoryRepository;
             _mapper = mapper;
+            _slugHelper = slugHelper;
         }
 
         [AllowAnonymous]
@@ -51,15 +58,15 @@ namespace CMS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("/post/{id:int}")]
-        public async Task<IActionResult> Post(int? id)
+        [HttpGet("/post/{slug}")]
+        public async Task<IActionResult> Post(string slug)
         {
-            if (id == null || _postRepository == null)
+            if (slug == null || _postRepository == null)
             {
                 return NotFound();
             }
 
-            var post = await _postRepository.GetById(id);
+            var post = await _postRepository.GetBySlug(slug);
 
             if (post == null)
             {
@@ -132,6 +139,7 @@ namespace CMS.Controllers
 
             post = _mapper.Map<Post>(viewModel);
             post.ImageUrl = viewModel.ImageFile != null ? imageUrl : null;
+            post.Slug = _slugHelper.GenerateSlug(post.Title);
 
             if (ModelState.IsValid)
             {
@@ -191,6 +199,7 @@ namespace CMS.Controllers
                         if (!await UploadFile(viewModel.ImageFile, path)) return View(viewModel);
 
                         post.ImageUrl = imageUrl;
+                        post.Slug = _slugHelper.GenerateSlug(post.Title);
                     }
                     await _postRepository.Update(post);
                 }
